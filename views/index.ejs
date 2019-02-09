@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head> 
+<body>
+    <h1>hello chats</h1>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        // socket.on('messagesend',function(data){
+        //     document.write(data.des)
+        // });
+        // socket.emit('key','from the client side');
+
+        // socket.on('newuser',(data)=>{
+        //     document.body.innerHTML='';
+        //     document.write(data.dess);
+        // });
+        socket.on('connectToRoom',(data)=>{
+            document.body.innerHTML='';
+            document.write(data);
+        })
+    </script>
+</body>
+</html>
