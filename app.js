@@ -9,34 +9,39 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set("view engine", "ejs");
 const port=process.env.PORT || 3000;
 app.get('/',(req,res)=>{
-    res.render("index");
+    res.render('index');
 });
-// let clients=0;
-let roomno=1;
-//Whenever someone connects this gets executed
-io.on('connection', function (socket) {
-    // clien    ts++;
-    console.log('A user connected');
-    // socket.emit('newuser',{dess:'hey welcome'})
-    // socket.broadcast.emit('newuser',{dess:clients+' clients connecteds'})
-    //Whenever someone disconnects this piece of code executed
-    // setTimeout(()=>{
-    //     socket.emit('messagesend',{des:"bla bla bla"});
-    // },5000);
-    // socket.on('disconnect', function () {
-    //     clients--;
-    //     socket.broadcast.emit('newuser',{dess:clients+' clients connected'})
-    //     console.log('A user disconnected');
-    // });
-    // socket.on('key',(data)=>{
-    //     console.log(data);
-        
-    // });
-    if(io.adapter.rooms["room-"+roomno]&& io.adapter.rooms["room-"+roomno].length>1)
-    roomno++;
-    socket.join('room-'+roomno);
 
-    io.sockets.in('room-'+roomno).emit('connectToRoom','You are in room number '+roomno);
+names=[];
+io.sockets.on('connection', function (socket) {
+ 
+    console.log('A user connected');
+    
+    socket.on('disconnect', function () {
+      if(!socket.name) return;
+      names.splice(names.indexOf(socket.name),1);
+        console.log('A user disconnected');
+
+    });
+    socket.on('sendname',(data,callback)=>{
+        console.log(data);
+        if(names.indexOf(data)!= -1){
+            callback(false);
+        }else{
+        callback(true);
+        socket.name=data;
+        names.push(socket.name);
+        io.sockets.emit('fusername',data);
+        console.log(names);
+        }
+    });
+    
+    
+    socket.on('send message',(data)=>{
+        console.log(data);
+        
+        io.sockets.emit('new message',{msg:data});
+    })
 });
 server.listen(port,()=>{
     console.log(`Server is running at ${port}`);
